@@ -1,13 +1,21 @@
-import mongoose from "mongoose";
-
-const { Schema } = mongoose;
+import { Schema, model, models } from "mongoose";
+import nanoid from "nanoid";
 
 const hashSchema = new Schema({
-  id: Number,
-  url: String,
-  hash: String,
-  created_at: Date,
+  code: {
+    type: String,
+    unique: true,
+  },
+  url: {
+    type: String,
+    required: true,
+  },
+  clicked: { type: Number, default: 0 },
+  created_at: {
+    type: Date,
+    default: Date.now,
+  },
 });
-const Hash = mongoose.model("Hash", hashSchema);
+const Hash = models.Hash || model("Hash", hashSchema);
 
 export default Hash;
