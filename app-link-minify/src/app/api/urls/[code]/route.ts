@@ -1,6 +1,6 @@
 import { connectDB } from "@/lib/mongodb";
 import Hash from "@/models/hash";
-import { request } from "http";
+import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
 // export async function GET(hash: string) {
 //   await connectDB();
@@ -18,5 +18,7 @@ export async function GET(
   const result = await Hash.find({
     code: slung,
   });
+
+  // redirect(result[0].url);
   return NextResponse.json(result);
 }

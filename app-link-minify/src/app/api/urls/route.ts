@@ -13,9 +13,8 @@ export async function POST(request: Request) {
   await connectDB();
   const res = await request.json();
   const result = await Hash.create({
-    url: res.urlLink,
+    url: res.url ?? "localhost:8080",
     code: res.code,
   });
   return NextResponse.json(result);
-  // const rta = await Hash.create()
 }
