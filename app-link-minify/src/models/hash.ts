@@ -1,5 +1,4 @@
 import { Schema, model, models } from "mongoose";
-import nanoid from "nanoid";
 
 const hashSchema = new Schema({
   code: {
