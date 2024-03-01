@@ -1,19 +1,18 @@
 "use client";
 import { useState } from "react";
-import {
-  inicializarLocalStorage,
-  anadirURL,
-  obtenerListaURLs,
-} from "@/lib/localApi";
+import {} from "@/components/ui/sonner";
+import { Toaster, toast } from "sonner";
+import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { asegurarHttp } from "@/lib/utils";
-
+import { useLinkStore } from "@/lib/store";
 export default function FormUrl() {
   const [url, setUrl] = useState<string>("");
-  inicializarLocalStorage();
+  const { addLink, links } = useLinkStore();
   async function createNewShort() {
     const linkToShort = asegurarHttp(url);
+
     const rta = await fetch("/api/urls", {
       method: "POST",
       headers: {
@@ -25,9 +24,9 @@ export default function FormUrl() {
     });
     setUrl("");
     const data = await rta.json();
-    anadirURL(JSON.stringify(data));
-
-    console.log(obtenerListaURLs());
+    addLink(data);
+    toast.success("Link created successfully");
+    console.log(links);
   }
 
   return (
@@ -52,11 +51,14 @@ export default function FormUrl() {
         />
         <Button
           type="submit"
-          className="border-4 bg-transparent rounded-3xl px-5 animate-fade-in-left animate-delay-300 py-5 hover:bg-white hover:text-black border-white hover:scale-105 duration-200"
+          className={cn(
+            "border-4 bg-white text-zinc-950 rounded-3xl px-5 hover:scale-125 duration-300 animate-duration-300 animate-fade-in-left animate-delay-300 py-5 hover:bg-white hover:text-black border-white"
+          )}
         >
           Shorten URL
         </Button>
       </form>
+      <Toaster position="top-center" richColors />
     </>
   );
 }
