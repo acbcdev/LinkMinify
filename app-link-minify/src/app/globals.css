@@ -2,6 +2,27 @@
 @tailwind components;
 @tailwind utilities;
  
+
+
+/* Establece el color de fondo de la barra de desplazamiento */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Establece el color de fondo de la pista de la barra de desplazamiento */
+::-webkit-scrollbar-track {
+  background: #333;
+}
+
+/* Establece el color de la barra de desplazamiento en sí */
+::-webkit-scrollbar-thumb {
+  background: #666;
+}
+
+/* Establece el color de la barra de desplazamiento cuando se pasa el ratón por encima */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
 @layer base {
   :root {
     --background: 0 0% 100%;
