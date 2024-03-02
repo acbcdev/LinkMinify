@@ -5,7 +5,7 @@ export default function Home() {
     <>
       <main id="Create" className="grid place-content-center h-screen gap-10">
         <header>
-          <h1 className="text-white text-center text-8xl animate-fade-in animate-delay-250">
+          <h1 className="text-white text-center text-8xl animate-fade-in animate-duration-200 animate-delay-250">
             Link Minify
           </h1>
         </header>
