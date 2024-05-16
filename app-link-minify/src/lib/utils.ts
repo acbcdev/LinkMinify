@@ -4,7 +4,7 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-export function asegurarHttp(url: string): string | null {
+export function sanitizeUrl(url: string): string | null {
   const regex =
     /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?([\?&\w\.-=]*)$/;
 

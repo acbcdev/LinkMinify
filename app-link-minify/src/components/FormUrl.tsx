@@ -1,69 +1,61 @@
 "use client";
 import { useState } from "react";
-import {} from "@/components/ui/sonner";
 import { Toaster, toast } from "sonner";
-import { cn } from "@/lib/utils";
-import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { asegurarHttp } from "@/lib/utils";
+import { sanitizeUrl } from "@/lib/utils";
 import { useLinkStore } from "@/lib/store";
+import { CreateUrl } from "@/actions/Actions";
 export default function FormUrl() {
-  const [url, setUrl] = useState<string>("");
-  const { addLink, links } = useLinkStore();
-  async function createNewShort() {
-    const linkToShort = asegurarHttp(url);
-    if (linkToShort === null) {
-      toast.error("Invalid URL");
-      return;
-    }
-    const rta = await fetch("/api/urls", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        url: linkToShort,
-      }),
-    });
-    setUrl("");
-    const data = await rta.json();
-    addLink(data);
-    toast.success("Link created successfully");
-    console.log(links);
-  }
+	const [url, setUrl] = useState<string>("");
+	const [loading, setLoading] = useState<boolean>(false);
+	const { addLink } = useLinkStore();
 
-  return (
-    <>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          createNewShort();
-        }}
-        className=" flex flex-col md:flex-row items-center justify-center w-full gap-2"
-      >
-        <section className="flex flex-col md:flex-row gap-2 animate-bounce-fade-in animate-delay-300 animate-duration-250 ">
-          <Input
-            type="text"
-            placeholder="Enter your link here"
-            required
-            value={url}
-            onChange={(e) => {
-              e.preventDefault;
-              setUrl(e.target.value);
-            }}
-            className="w-64 text-white  border-white focus-visible:ring-0 focus:ring-offset-transparent focus:bg-white hover:bg-white hover:text-black duration-200 focus:outline-none focus:shadow-2xl shadow-white focus:text-black bg-transparent rounded-3xl border-4 p-6"
-          />
-          <Button
-            type="submit"
-            className={cn(
-              "border-4 bg-white text-zinc-950 rounded-3xl px-5 hover:scale-125 duration-300  py-5 hover:bg-white hover:text-black border-white"
-            )}
-          >
-            Shorten URL
-          </Button>
-        </section>
-      </form>
-      <Toaster position="top-center" richColors />
-    </>
-  );
+	async function createNewShort() {
+		const linkToShort = sanitizeUrl(url);
+		if (linkToShort === null) {
+			toast.error("Invalid URL");
+			return;
+		}
+		setLoading(true);
+		const rta = await CreateUrl(linkToShort);
+		setUrl("");
+		setLoading(false);
+		addLink(rta);
+		toast.success("Link created successfully");
+	}
+
+	return (
+		<>
+			<form
+				onSubmit={(e) => {
+					e.preventDefault();
+					createNewShort();
+				}}
+				className=" flex flex-col md:flex-row items-center justify-center w-full gap-2"
+			>
+				<section className="flex flex-col md:flex-row gap-2 animate-bounce-fade-in animate-delay-300 animate-duration-250 ">
+					<Input
+						type="text"
+						placeholder="Enter your link here"
+						required
+						value={url}
+						onChange={(e) => {
+							e.preventDefault;
+							setUrl(e.target.value);
+						}}
+						className="w-64 text-white  border-white focus-visible:ring-0 focus:ring-offset-transparent focus:bg-white hover:bg-white hover:text-black duration-200 focus:outline-none focus:shadow-2xl shadow-white focus:text-black bg-transparent rounded-3xl border-4 p-6"
+					/>
+					<button
+						type="submit"
+						disabled={loading}
+						className="border-4 bg-white flex items-center gap-x-2 text-zinc-950 rounded-3xl px-5 hover:scale-110 duration-300  py-2  border-white"
+					>
+						{loading && <div className="loader" />} Shorten URL
+					</button>
+				</section>
+			</form>
+			<Toaster position="top-center" richColors />
+		</>
+	);
 }
+/* HTML: <div class="loader"></div> */
