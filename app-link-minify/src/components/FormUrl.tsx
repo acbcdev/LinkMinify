@@ -5,22 +5,25 @@ import { Input } from "./ui/input";
 import { sanitizeUrl } from "@/lib/utils";
 import { useLinkStore } from "@/lib/store";
 import { CreateUrl } from "@/actions/Actions";
+import { tree } from "next/dist/build/templates/app-page";
 export default function FormUrl() {
 	const [url, setUrl] = useState<string>("");
 	const [loading, setLoading] = useState<boolean>(false);
 	const { addLink } = useLinkStore();
 
 	async function createNewShort() {
+		setLoading(true);
 		const linkToShort = sanitizeUrl(url);
 		if (linkToShort === null) {
 			toast.error("Invalid URL");
+			setLoading(false);
 			return;
 		}
-		setLoading(true);
 		const rta = await CreateUrl(linkToShort);
+		const data = JSON.parse(rta);
 		setUrl("");
 		setLoading(false);
-		addLink(rta);
+		addLink(data);
 		toast.success("Link created successfully");
 	}
 
@@ -48,7 +51,7 @@ export default function FormUrl() {
 					<button
 						type="submit"
 						disabled={loading}
-						className="border-4 bg-white flex items-center gap-x-2 text-zinc-950 rounded-3xl px-5 hover:scale-110 duration-300  py-2  border-white"
+						className="border-4 bg-white  disabled:bg-transparent disabled:text-white disabled:border-opacity-40 flex items-center gap-x-2 text-zinc-950 rounded-3xl px-5 hover:scale-110 duration-300  py-2  border-white"
 					>
 						{loading && <div className="loader" />} Shorten URL
 					</button>
