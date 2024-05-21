@@ -4,15 +4,13 @@ import { Toaster, toast } from "sonner";
 import { Input } from "./ui/input";
 import { useLinkStore } from "@/lib/store";
 import { CreateUrl } from "@/actions/Actions";
-import { tree } from "next/dist/build/templates/app-page";
+
 export default function FormUrl() {
 	const [url, setUrl] = useState<string>("");
 	const [loading, setLoading] = useState<boolean>(false);
 	const { addLink } = useLinkStore();
-
 	async function createNewShort() {
 		setLoading(true);
-
 		if (url === "") {
 			toast.error("Invalid URL");
 			setLoading(false);
