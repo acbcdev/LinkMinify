@@ -8,7 +8,7 @@ import { nanoid } from "nanoid";
 export async function GetUrl(hash: string) {
   await connectDB();
   const result = await Hash.findOne({ code: hash });
-  return result.url.json();
+  return result.url
 }
 export async function CreateUrl(url: string) {
   await connectDB();

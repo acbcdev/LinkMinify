@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { Toaster, toast } from "sonner";
 import { Input } from "./ui/input";
-import { sanitizeUrl } from "@/lib/utils";
 import { useLinkStore } from "@/lib/store";
 import { CreateUrl } from "@/actions/Actions";
 import { tree } from "next/dist/build/templates/app-page";
@@ -13,13 +12,13 @@ export default function FormUrl() {
 
 	async function createNewShort() {
 		setLoading(true);
-		const linkToShort = sanitizeUrl(url);
-		if (linkToShort === null) {
+
+		if (url === "") {
 			toast.error("Invalid URL");
 			setLoading(false);
 			return;
 		}
-		const rta = await CreateUrl(linkToShort);
+		const rta = await CreateUrl(url);
 		const data = JSON.parse(rta);
 		setUrl("");
 		setLoading(false);
@@ -38,7 +37,7 @@ export default function FormUrl() {
 			>
 				<section className="flex flex-col md:flex-row gap-2 animate-bounce-fade-in animate-delay-300 animate-duration-250 ">
 					<Input
-						type="text"
+						type="url"
 						placeholder="Enter your link here"
 						required
 						value={url}
