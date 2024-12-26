@@ -13,10 +13,8 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en">
-			<body
-				className={`${GeistSans.className} from-zinc-950 to-zinc-700 bg-gradient-to-tr`}
-			>
+		<html lang="en" data-mode='dark' className="dark">
+			<body className={`${GeistSans.className} bg-zinc-900  `}>
 				{children}
 			</body>
 		</html>

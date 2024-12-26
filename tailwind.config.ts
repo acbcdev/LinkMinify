@@ -3,7 +3,7 @@
 import type { Config } from "tailwindcss";
 
 const config = {
-  darkMode: "class",
+  darkMode: ["selector", '[data-mode="dark"]'],
   content: [
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
@@ -76,7 +76,10 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), require('@midudev/tailwind-animations')],
+  plugins: [
+    require("tailwindcss-animate"),
+    require("@midudev/tailwind-animations"),
+  ],
 } satisfies Config;
 
 export default config;

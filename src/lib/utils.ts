@@ -12,3 +12,8 @@ export function randomNum(): number {
   // where min = 5 and max = 8.
   return Math.floor(Math.random() * (8 - 5 + 1)) + 5;
 }
+
+export function IsValidUrl(url: string): boolean {
+  const urlRegex = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?$/;
+  return urlRegex.test(url);
+}

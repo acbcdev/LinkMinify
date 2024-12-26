@@ -17,15 +17,15 @@ export default function UrlsCreated() {
 	return (
 		<>
 			{links.length !== 0 && (
-				<Table className="text-white animate-fade-in animate-delay-500">
+				<Table className=" animate-fade-in animate-delay-500">
 					<TableHeader>
 						<TableRow>
-							<TableHead className="w-[100px] text-white font-bold text-center">
+							<TableHead className="w-[100px]  font-bold text-center">
 								Url
 							</TableHead>
 							<TableHead
 								colSpan={2}
-								className="text-white font-bold text-center"
+								className=" font-bold text-center"
 							>
 								ShortLink
 							</TableHead>
@@ -38,18 +38,19 @@ export default function UrlsCreated() {
 								<TableRow key={code}>
 									<TableCell className="font-medium">{url}</TableCell>
 									<TableCell className="text-right">
-										<Link
-											target="_blank"
-											href={code}
-											className="hover:underline"
-										>
-											{link}
-										</Link>
+										<Button asChild variant={"link"}>
+											<Link
+												target="_blank"
+												href={code}
+											>
+												{link}
+											</Link>
+										</Button>
 									</TableCell>
 									<TableCell>
 										<Button
 											className="rounded-3xl"
-											variant={"ghost"}
+											variant={"secondary"}
 											onClick={() => {
 												navigator.clipboard.writeText(link);
 												toast(`link Copied on your clipboard ${link}`);
