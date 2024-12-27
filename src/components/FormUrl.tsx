@@ -30,7 +30,7 @@ export default function FormUrl() {
 			addLink(data);
 			toast.success("Link created successfully");
 		} catch (error) {
-			toast.error("An error occurred, try again later");
+			toast.error("An error occurred, try again later ");
 		} finally {
 			setLoading(false);
 		}
@@ -50,6 +50,7 @@ export default function FormUrl() {
 						type="text"
 						placeholder="Enter your link here"
 						value={url}
+						disabled={loading}
 						onChange={(e) => {
 							e.preventDefault;
 							setUrl(e.target.value);

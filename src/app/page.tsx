@@ -19,7 +19,7 @@ export default function Home() {
           <UrlsCreated />
         </section>
         <footer className="h-11">
-          <p className="text-white text-center">Made by ACBC</p>
+          <p className="text-white text-center">Made by <a href="https://github.com/acbcdev" target="_blank" rel="noreferrer " className="underline">ACBC</a></p>
         </footer>
       </section>
     </>

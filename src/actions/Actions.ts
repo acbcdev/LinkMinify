@@ -23,9 +23,9 @@ export async function CreateUrl(url: string) {
       url: urlToShort,
       code: nanoid(randomNum()),
     });
-
-    return JSON.stringify({ ...result, originalUrl: urlToShort });
+    return JSON.stringify(result);
   } catch (error) {
+    console.log(error);
     return JSON.stringify({ error });
   }
 }

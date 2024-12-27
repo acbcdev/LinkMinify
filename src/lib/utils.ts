@@ -14,6 +14,6 @@ export function randomNum(): number {
 }
 
 export function IsValidUrl(url: string): boolean {
-  const urlRegex = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?$/;
+  const urlRegex = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=#]*)?$/;
   return urlRegex.test(url);
 }
