@@ -1,6 +1,8 @@
 "use client";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
+import { X } from "lucide-react";
+
 import {
 	Table,
 	TableBody,
@@ -13,7 +15,7 @@ import Link from "next/link";
 import { Button } from "./ui/button";
 import { useLinkStore } from "@/lib/store";
 export default function UrlsCreated() {
-	const { links } = useLinkStore();
+	const { links, deleteLink } = useLinkStore();
 	return (
 		<>
 			{links.length !== 0 && (
@@ -41,7 +43,7 @@ export default function UrlsCreated() {
 										<Button asChild variant={"link"}>
 											<Link
 												target="_blank"
-												href={code}
+												href={code ?? ''}
 											>
 												{link}
 											</Link>
@@ -49,7 +51,6 @@ export default function UrlsCreated() {
 									</TableCell>
 									<TableCell>
 										<Button
-											className="rounded-3xl"
 											variant={"secondary"}
 											onClick={() => {
 												navigator.clipboard.writeText(link);
@@ -57,6 +58,16 @@ export default function UrlsCreated() {
 											}}
 										>
 											Copy
+										</Button>
+									</TableCell>
+									<TableCell>
+										<Button
+											variant={"destructive"}
+											onClick={() => {
+												deleteLink(code ?? '')
+											}}
+										>
+											<X />
 										</Button>
 									</TableCell>
 								</TableRow>

@@ -10,19 +10,28 @@ interface LinkState {
   links: Link[];
   addLink: (newLink: Link) => void;
   updateLink: (code: string, newUrl: string) => void;
+  deleteLink: (code: string) => void;
 }
 
 export const useLinkStore = create(
   persist<LinkState>(
     (set) => ({
       links: [],
-      addLink: (newLink) =>
-        set((state) => ({ links: [...state.links, newLink] })),
+      addLink: (newLink) => {
+        if (newLink.code && newLink.url) {
+          set((state) => ({ links: [...state.links, newLink] }));
+        }
+      },
       updateLink: (code, newUrl) =>
         set((state) => ({
           links: state.links.map((link) =>
             link.code === code ? { ...link, originalUrl: newUrl } : link
           ),
+        })),
+      deleteLink: (code) =>
+        set((state) => ({
+          ...state,
+          links: state.links.filter((i) => i.code === code),
         })),
     }),
     {
