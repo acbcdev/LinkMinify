@@ -4,6 +4,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 interface Link {
   code: string;
   url: string;
+  originalUrl: string;
 }
 
 interface LinkState {
@@ -17,10 +18,11 @@ export const useLinkStore = create(
   persist<LinkState>(
     (set) => ({
       links: [],
-      addLink: (newLink) => {
-        if (newLink.code && newLink.url) {
-          set((state) => ({ links: [...state.links, newLink] }));
+      addLink: (newLink: Link) => {
+        if (!newLink.code || !newLink.url) {
+          throw new Error("Invalid link data");
         }
+        set((state) => ({ links: [...state.links, newLink] }));
       },
       updateLink: (code, newUrl) =>
         set((state) => ({
@@ -31,7 +33,7 @@ export const useLinkStore = create(
       deleteLink: (code) =>
         set((state) => ({
           ...state,
-          links: state.links.filter((i) => i.code === code),
+          links: state.links.filter((i) => i.code !== code),
         })),
     }),
     {
