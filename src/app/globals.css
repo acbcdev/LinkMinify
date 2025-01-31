@@ -103,7 +103,7 @@
 }
 
 body::before {
-  --size: 120px;
+  --size: 37.56px;
   --line: color-mix(in lch, canvasText, transparent 70%);
   content: '';
   height: 100vh;
@@ -116,6 +116,7 @@ body::before {
   mask: linear-gradient(-20deg, transparent 50%, white);
   top: 0;
   transform-style: flat;
+  opacity: 0.5;
   pointer-events: none;
   z-index: -1;
 }
