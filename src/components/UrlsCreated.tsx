@@ -25,10 +25,7 @@ export default function UrlsCreated() {
 							<TableHead className="w-[100px]  font-bold text-center">
 								Url
 							</TableHead>
-							<TableHead
-								colSpan={2}
-								className=" font-bold text-center"
-							>
+							<TableHead colSpan={2} className=" font-bold text-center">
 								ShortLink
 							</TableHead>
 						</TableRow>
@@ -41,10 +38,7 @@ export default function UrlsCreated() {
 									<TableCell className="font-medium">{url}</TableCell>
 									<TableCell className="text-right">
 										<Button asChild variant={"link"}>
-											<Link
-												target="_blank"
-												href={code ?? ''}
-											>
+											<Link target="_blank" href={code ?? ""}>
 												{link}
 											</Link>
 										</Button>
@@ -64,7 +58,7 @@ export default function UrlsCreated() {
 										<Button
 											variant={"destructive"}
 											onClick={() => {
-												deleteLink(code ?? '')
+												deleteLink(code ?? "");
 											}}
 										>
 											<X />
