@@ -1,24 +1,28 @@
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
 
 interface Link {
   code: string;
   url: string;
 }
 
-interface LinkState {
+type LinkStates = {
   links: Link[];
+};
+
+type LinkActions = {
   addLink: (newLink: Link) => void;
   updateLink: (code: string, newUrl: string) => void;
   deleteLink: (code: string) => void;
-}
+};
+type LinkStore = LinkStates & LinkActions;
 
 export const useLinkStore = create(
-  persist<LinkState>(
+  persist<LinkStore>(
     (set) => ({
       links: [],
       addLink: (newLink: Link) => {
-        set((state) => ({ links: [...state.links, newLink] }));
+        set((state) => ({ links: [newLink, ...state.links] }));
       },
       updateLink: (code, newUrl) =>
         set((state) => ({
