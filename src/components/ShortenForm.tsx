@@ -1,7 +1,4 @@
 "use client";
-import { useState } from "react";
-import { toast } from "sonner";
-import { CreateUrl } from "@/actions/Actions";
 import {
 	InputGroup,
 	InputGroupAddon,
@@ -9,43 +6,16 @@ import {
 	InputGroupInput,
 } from "@/components/ui/input-group";
 import { Spinner } from "@/components/ui/spinner";
-import { useLinkStore } from "@/lib/store";
-import { IsValidUrl } from "@/lib/utils";
+import { useShortenUrl } from "@/hooks/useShortenUrl";
 
 export default function ShortenForm() {
-	const [url, setUrl] = useState<string>("");
-	const [loading, setLoading] = useState<boolean>(false);
-	const { addLink } = useLinkStore();
-	async function createNewShort() {
-		setLoading(true);
-		if (url.trim() === "") {
-			toast.error("Please enter a URL");
-			setLoading(false);
-			return;
-		}
-		if (!IsValidUrl(url)) {
-			toast.error("Invalid URL");
-			setLoading(false);
-			return;
-		}
-		try {
-			const rta = await CreateUrl(url);
-			const data = JSON.parse(rta);
-			setUrl("");
-			addLink(data);
-			toast.success("Link created successfully");
-		} catch {
-			toast.error("An error occurred, try again later ");
-		} finally {
-			setLoading(false);
-		}
-	}
+	const { url, setUrl, loading, createShortUrl } = useShortenUrl();
 
 	return (
 		<form
 			onSubmit={(e) => {
 				e.preventDefault();
-				createNewShort();
+				createShortUrl();
 			}}
 			className="w-full max-w-2xl animate-bounce-fade-in animate-delay-300 animate-duration-250"
 		>

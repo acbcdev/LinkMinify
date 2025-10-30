@@ -1,9 +1,9 @@
 "use server";
 
+import { nanoid } from "nanoid";
 import { connectDB } from "@/lib/mongodb";
 import { randomNum } from "@/lib/utils";
 import Hash from "@/models/hash";
-import { nanoid } from "nanoid";
 
 export async function GetUrl(hash: string) {
   "use server";
@@ -23,6 +23,18 @@ export async function CreateUrl(url: string) {
       url: urlToShort,
       code: nanoid(randomNum()),
     });
+    return JSON.stringify(result);
+  } catch (error) {
+    console.log(error);
+    return JSON.stringify({ error });
+  }
+}
+
+export async function DeleteUrl(code: string) {
+  "use server";
+  try {
+    await connectDB();
+    const result = await Hash.deleteOne({ code });
     return JSON.stringify(result);
   } catch (error) {
     console.log(error);
