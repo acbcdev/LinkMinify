@@ -8,7 +8,6 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Toaster } from "@/components/ui/sonner";
 import { useLinkStore } from "@/lib/store";
 import CopyButton from "./CopyButton";
 import { Button } from "./ui/button";
@@ -111,8 +110,6 @@ export default function LinksList() {
 					</div>
 				</div>
 			)}
-
-			<Toaster position="top-center" />
 		</>
 	);
 }
