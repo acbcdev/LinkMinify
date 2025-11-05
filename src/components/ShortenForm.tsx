@@ -25,6 +25,7 @@ export default function ShortenForm() {
 					placeholder="Paste a long URL"
 					value={url}
 					disabled={loading}
+					autoFocus
 					onChange={(e) => {
 						e.preventDefault;
 						setUrl(e.target.value);
