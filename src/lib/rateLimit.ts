@@ -1,5 +1,5 @@
-import RateLimit from "@/models/rateLimit";
 import { connectDB } from "@/lib/mongodb";
+import RateLimit from "@/models/rateLimit";
 
 const MAX_REQUESTS = parseInt(process.env.RATE_LIMIT_MAX || "10", 10);
 
@@ -35,9 +35,8 @@ export async function checkRateLimit(ip: string): Promise<{
   const resetsAt = getResetTime();
 
   // Check if IP is in bypass list
-  const bypassIps = process.env.RATE_LIMIT_BYPASS_IPS?.split(",").map((ip) =>
-    ip.trim()
-  ) || [];
+  const bypassIps =
+    process.env.RATE_LIMIT_BYPASS_IPS?.split(",").map((ip) => ip.trim()) || [];
   if (bypassIps.includes(ip)) {
     return {
       allowed: true,
@@ -48,7 +47,7 @@ export async function checkRateLimit(ip: string): Promise<{
   }
 
   // Find or create rate limit record for today
-  let rateLimitRecord = await RateLimit.findOne({ ip, date: currentDate });
+  const rateLimitRecord = await RateLimit.findOne({ ip, date: currentDate });
 
   if (!rateLimitRecord) {
     // No record for today, user can proceed
@@ -81,9 +80,8 @@ export async function incrementRateLimit(ip: string): Promise<void> {
   const currentDate = getCurrentDate();
 
   // Check if IP is in bypass list
-  const bypassIps = process.env.RATE_LIMIT_BYPASS_IPS?.split(",").map((ip) =>
-    ip.trim()
-  ) || [];
+  const bypassIps =
+    process.env.RATE_LIMIT_BYPASS_IPS?.split(",").map((ip) => ip.trim()) || [];
   if (bypassIps.includes(ip)) {
     return;
   }
