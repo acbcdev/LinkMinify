@@ -13,6 +13,10 @@ export function randomNum(): number {
   return Math.floor(Math.random() * (8 - 5 + 1)) + 5;
 }
 
+export function normalizeUrl(url: string): string {
+  return /^(https?:\/\/)/.test(url) ? url : `https://${url}`;
+}
+
 export function IsValidUrl(url: string): boolean {
   const urlRegex = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=#]*)?$/;
   return urlRegex.test(url);
