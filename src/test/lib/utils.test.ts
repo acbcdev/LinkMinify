@@ -1,5 +1,25 @@
 import { describe, it, expect } from "vitest";
-import { IsValidUrl, randomNum } from "@/lib/utils";
+import { IsValidUrl, normalizeUrl, randomNum } from "@/lib/utils";
+
+describe("normalizeUrl", () => {
+  it("should keep https URL unchanged", () => {
+    expect(normalizeUrl("https://example.com")).toBe("https://example.com");
+  });
+
+  it("should keep http URL unchanged", () => {
+    expect(normalizeUrl("http://example.com")).toBe("http://example.com");
+  });
+
+  it("should prepend https:// when protocol missing", () => {
+    expect(normalizeUrl("example.com")).toBe("https://example.com");
+  });
+
+  it("should prepend https:// to URL with path", () => {
+    expect(normalizeUrl("example.com/a/b?q=1")).toBe(
+      "https://example.com/a/b?q=1",
+    );
+  });
+});
 
 describe("IsValidUrl", () => {
   // Valid URLs

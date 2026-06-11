@@ -83,14 +83,13 @@ describe("useShortenUrl", () => {
 
   it("debe crear URL exitosamente y agregar al store", async () => {
     const mockResponse = {
+      type: "success",
       code: "abc123",
       url: "https://example.com",
       rateLimit: { remaining: 9, resetsAt: new Date().toISOString() },
     };
 
-    (CreateUrl as ReturnType<typeof vi.fn>).mockResolvedValue(
-      JSON.stringify(mockResponse)
-    );
+    (CreateUrl as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
 
     const { result } = renderHook(() => useShortenUrl());
 
@@ -107,7 +106,10 @@ describe("useShortenUrl", () => {
     });
 
     expect(CreateUrl).toHaveBeenCalledWith("https://example.com");
-    expect(mockAddLink).toHaveBeenCalledWith(mockResponse);
+    expect(mockAddLink).toHaveBeenCalledWith({
+      code: "abc123",
+      url: "https://example.com",
+    });
     expect(toast.success).toHaveBeenCalledWith(
       "Link created successfully. 9 remaining today."
     );
@@ -119,13 +121,13 @@ describe("useShortenUrl", () => {
     resetDate.setHours(23, 59, 0, 0);
 
     const mockRateLimitResponse = {
-      error: "RATE_LIMIT_EXCEEDED",
+      type: "rate_limited",
       current: 10,
       resetsAt: resetDate.toISOString(),
     };
 
     (CreateUrl as ReturnType<typeof vi.fn>).mockResolvedValue(
-      JSON.stringify(mockRateLimitResponse)
+      mockRateLimitResponse
     );
 
     const { result } = renderHook(() => useShortenUrl());
@@ -156,13 +158,9 @@ describe("useShortenUrl", () => {
   });
 
   it("debe manejar otros errores del servidor", async () => {
-    const mockErrorResponse = {
-      error: "Some server error",
-    };
-
-    (CreateUrl as ReturnType<typeof vi.fn>).mockResolvedValue(
-      JSON.stringify(mockErrorResponse)
-    );
+    (CreateUrl as ReturnType<typeof vi.fn>).mockResolvedValue({
+      type: "error",
+    });
 
     const { result } = renderHook(() => useShortenUrl());
 
@@ -207,32 +205,5 @@ describe("useShortenUrl", () => {
       "An error occurred, try again later"
     );
     expect(mockAddLink).not.toHaveBeenCalled();
-  });
-
-  it("debe mostrar mensaje de éxito sin rateLimit si no está presente", async () => {
-    const mockResponse = {
-      code: "xyz789",
-      url: "https://midu.dev",
-    };
-
-    (CreateUrl as ReturnType<typeof vi.fn>).mockResolvedValue(
-      JSON.stringify(mockResponse)
-    );
-
-    const { result } = renderHook(() => useShortenUrl());
-
-    act(() => {
-      result.current.setUrl("https://midu.dev");
-    });
-
-    await act(async () => {
-      await result.current.createShortUrl();
-    });
-
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false);
-    });
-
-    expect(toast.success).toHaveBeenCalledWith("Link created successfully");
   });
 });
