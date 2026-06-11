@@ -3,17 +3,30 @@
 import { nanoid } from "nanoid";
 import { headers } from "next/headers";
 import { connectDB } from "@/lib/mongodb";
-import { randomNum } from "@/lib/utils";
+import { normalizeUrl, randomNum } from "@/lib/utils";
 import Hash from "@/models/hash";
-import { checkRateLimit, incrementRateLimit } from "@/lib/rateLimit";
+import { consumeRateLimit } from "@/lib/rateLimit";
 
-export async function GetUrl(hash: string) {
+export type CreateUrlResult =
+  | {
+      type: "success";
+      code: string;
+      url: string;
+      rateLimit: { remaining: number; resetsAt: string };
+    }
+  | { type: "rate_limited"; current: number; resetsAt: string }
+  | { type: "error" };
+
+export async function GetUrl(hash: string): Promise<string | null> {
   "use server";
   await connectDB();
-  const result = await Hash.findOne({ code: hash });
-  return result.url;
+  const result = await Hash.findOneAndUpdate(
+    { code: hash },
+    { $inc: { clicked: 1 } },
+  );
+  return result?.url ?? null;
 }
-export async function CreateUrl(url: string) {
+export async function CreateUrl(url: string): Promise<CreateUrlResult> {
   "use server";
   try {
     // Get IP address from headers
@@ -23,52 +36,48 @@ export async function CreateUrl(url: string) {
       headersList.get("x-real-ip") ||
       "unknown";
 
-    // Check rate limit
-    const rateLimit = await checkRateLimit(ip);
+    // Check and consume rate limit
+    const rateLimit = await consumeRateLimit(ip);
 
     if (!rateLimit.allowed) {
-      return JSON.stringify({
-        error: "RATE_LIMIT_EXCEEDED",
-        message: `Daily limit reached (${rateLimit.current}/${process.env.RATE_LIMIT_MAX || "10"}). Resets at midnight UTC.`,
-        resetsAt: rateLimit.resetsAt.toISOString(),
+      return {
+        type: "rate_limited",
         current: rateLimit.current,
-      });
+        resetsAt: rateLimit.resetsAt.toISOString(),
+      };
     }
 
     await connectDB();
-    let urlToShort = url;
-    if (!/^(https?:\/\/)/.test(url)) {
-      urlToShort = `https://${url}`;
-    }
     const result = await Hash.create({
-      url: urlToShort,
+      url: normalizeUrl(url),
       code: nanoid(randomNum()),
     });
 
-    // Increment rate limit counter after successful creation
-    await incrementRateLimit(ip);
-
-    return JSON.stringify({
-      ...result.toObject(),
+    return {
+      type: "success",
+      code: result.code,
+      url: result.url,
       rateLimit: {
         remaining: rateLimit.remaining,
         resetsAt: rateLimit.resetsAt.toISOString(),
       },
-    });
+    };
   } catch (error) {
     console.log(error);
-    return JSON.stringify({ error });
+    return { type: "error" };
   }
 }
 
-export async function DeleteUrl(code: string) {
+export async function DeleteUrl(
+  code: string,
+): Promise<{ type: "success"; deletedCount: number } | { type: "error" }> {
   "use server";
   try {
     await connectDB();
     const result = await Hash.deleteOne({ code });
-    return JSON.stringify(result);
+    return { type: "success", deletedCount: result.deletedCount };
   } catch (error) {
     console.log(error);
-    return JSON.stringify({ error });
+    return { type: "error" };
   }
 }
