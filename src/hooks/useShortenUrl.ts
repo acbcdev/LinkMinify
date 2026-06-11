@@ -34,7 +34,7 @@ export function useShortenUrl() {
         const hours = resetDate.getHours().toString().padStart(2, "0");
         const minutes = resetDate.getMinutes().toString().padStart(2, "0");
         toast.error(
-          `Daily limit reached (${data.current}/10). Resets at ${hours}:${minutes} UTC.`
+          `Daily limit reached (${data.current}/10). Resets at ${hours}:${minutes} UTC.`,
         );
         setLoading(false);
         return;
@@ -53,7 +53,9 @@ export function useShortenUrl() {
       // Show success message with remaining count
       const remaining = data.rateLimit?.remaining;
       if (remaining !== undefined) {
-        toast.success(`Link created successfully. ${remaining} remaining today.`);
+        toast.success(
+          `Link created successfully. ${remaining} remaining today.`,
+        );
       } else {
         toast.success("Link created successfully");
       }
