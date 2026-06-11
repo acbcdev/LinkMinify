@@ -3,12 +3,18 @@ import RateLimit from "@/models/rateLimit";
 
 const MAX_REQUESTS = parseInt(process.env.RATE_LIMIT_MAX || "10", 10);
 
+export type RateLimitResult = {
+  allowed: boolean;
+  remaining: number;
+  resetsAt: Date;
+  current: number;
+};
+
 /**
  * Get current date in YYYY-MM-DD format (UTC)
  */
 function getCurrentDate(): string {
-  const now = new Date();
-  return now.toISOString().split("T")[0];
+  return new Date().toISOString().split("T")[0];
 }
 
 /**
@@ -20,75 +26,44 @@ function getResetTime(): Date {
   return tomorrow;
 }
 
-/**
- * Check if an IP address can create a new shortened URL
- */
-export async function checkRateLimit(ip: string): Promise<{
-  allowed: boolean;
-  remaining: number;
-  resetsAt: Date;
-  current: number;
-}> {
-  await connectDB();
-
-  const currentDate = getCurrentDate();
-  const resetsAt = getResetTime();
-
-  // Check if IP is in bypass list
+function isBypassed(ip: string): boolean {
   const bypassIps =
     process.env.RATE_LIMIT_BYPASS_IPS?.split(",").map((ip) => ip.trim()) || [];
-  if (bypassIps.includes(ip)) {
-    return {
-      allowed: true,
-      remaining: MAX_REQUESTS,
-      resetsAt,
-      current: 0,
-    };
-  }
-
-  // Find or create rate limit record for today
-  const rateLimitRecord = await RateLimit.findOne({ ip, date: currentDate });
-
-  if (!rateLimitRecord) {
-    // No record for today, user can proceed
-    return {
-      allowed: true,
-      remaining: MAX_REQUESTS - 1,
-      resetsAt,
-      current: 0,
-    };
-  }
-
-  const current = rateLimitRecord.count;
-  const allowed = current < MAX_REQUESTS;
-  const remaining = Math.max(0, MAX_REQUESTS - current - 1);
-
-  return {
-    allowed,
-    remaining,
-    resetsAt,
-    current,
-  };
+  return bypassIps.includes(ip);
 }
 
 /**
- * Increment the rate limit counter for an IP address
+ * Check and consume one rate-limit slot for an IP address.
+ * If the IP is under the limit, increments its counter and allows the request.
  */
-export async function incrementRateLimit(ip: string): Promise<void> {
-  await connectDB();
+export async function consumeRateLimit(ip: string): Promise<RateLimitResult> {
+  const resetsAt = getResetTime();
 
+  if (isBypassed(ip)) {
+    return { allowed: true, remaining: MAX_REQUESTS, resetsAt, current: 0 };
+  }
+
+  await connectDB();
   const currentDate = getCurrentDate();
 
-  // Check if IP is in bypass list
-  const bypassIps =
-    process.env.RATE_LIMIT_BYPASS_IPS?.split(",").map((ip) => ip.trim()) || [];
-  if (bypassIps.includes(ip)) {
-    return;
+  const record = await RateLimit.findOne({ ip, date: currentDate });
+  const current = record?.count ?? 0;
+
+  if (current >= MAX_REQUESTS) {
+    return { allowed: false, remaining: 0, resetsAt, current };
   }
 
   await RateLimit.findOneAndUpdate(
     { ip, date: currentDate },
     { $inc: { count: 1 } },
-    { upsert: true, new: true }
+    { upsert: true, new: true },
   );
+
+  const newCount = current + 1;
+  return {
+    allowed: true,
+    remaining: Math.max(0, MAX_REQUESTS - newCount),
+    resetsAt,
+    current: newCount,
+  };
 }
