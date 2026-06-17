@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
+import { nanoid } from "nanoid";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -11,6 +12,10 @@ export function randomNum(): number {
   // Math.random() * (max - min + 1) + min generates a range between min and max (inclusive),
   // where min = 5 and max = 8.
   return Math.floor(Math.random() * (8 - 5 + 1)) + 5;
+}
+
+export function generateCode(): string {
+  return nanoid(randomNum());
 }
 
 export function normalizeUrl(url: string): string {
