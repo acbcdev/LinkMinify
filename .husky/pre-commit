@@ -1,0 +1,3 @@
+# formatter (staged files) -> static check -> tests
+pnpm exec lint-staged
+pnpm typecheck && pnpm lint && pnpm test:run

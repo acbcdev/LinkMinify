@@ -90,7 +90,7 @@ describe("randomNum", () => {
   });
 
   it("should provide relatively even distribution", () => {
-    const counts = { 5: 0, 6: 0, 7: 0, 8: 0 };
+    const counts: Record<number, number> = { 5: 0, 6: 0, 7: 0, 8: 0 };
     const iterations = 10000;
 
     for (let i = 0; i < iterations; i++) {
