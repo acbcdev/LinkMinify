@@ -1,5 +1,9 @@
+minimumReleaseAge: 10080
+trustPolicy: no-downgrade
+trustPolicyIgnoreAfter: 259200
 allowBuilds:
-  '@sentry/cli': true
+  "@sentry/cli": true
   esbuild: true
   msw: false
   sharp: true
+  unrs-resolver: true
