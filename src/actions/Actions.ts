@@ -1,5 +1,6 @@
 "use server";
 
+import { after } from "next/server";
 import { headers } from "next/headers";
 import { normalizeUrl } from "@/lib/utils";
 import { linkRepository } from "@/lib/db";
@@ -53,7 +54,7 @@ export async function CreateUrl(url: string): Promise<CreateUrlResult> {
       },
     };
   } catch (error) {
-    console.log(error);
+    after(() => console.log(error));
     return { type: "error" };
   }
 }
@@ -66,7 +67,7 @@ export async function DeleteUrl(
     const deletedCount = await linkRepository.deleteByCode(code);
     return { type: "success", deletedCount };
   } catch (error) {
-    console.log(error);
+    after(() => console.log(error));
     return { type: "error" };
   }
 }
