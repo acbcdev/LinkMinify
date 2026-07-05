@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { CreateUrl } from "@/actions/Actions";
+import { createUrl } from "@/actions/actions";
 import { useLinkStore } from "@/lib/store";
-import { IsValidUrl } from "@/lib/utils";
+import { isValidUrl } from "@/lib/utils";
 
 export function useShortenUrl() {
   const [url, setUrl] = useState<string>("");
@@ -18,14 +18,14 @@ export function useShortenUrl() {
       return;
     }
 
-    if (!IsValidUrl(url)) {
+    if (!isValidUrl(url)) {
       toast.error("Invalid URL");
       setLoading(false);
       return;
     }
 
     try {
-      const result = await CreateUrl(url);
+      const result = await createUrl(url);
 
       if (result.type === "rate_limited") {
         const resetDate = new Date(result.resetsAt);

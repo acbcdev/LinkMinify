@@ -1,6 +1,6 @@
 import { model, models, Schema } from "mongoose";
 
-const RateLimitSchema = new Schema({
+const rateLimitSchema = new Schema({
   ip: {
     type: String,
     required: true,
@@ -22,8 +22,8 @@ const RateLimitSchema = new Schema({
 });
 
 // Compound index for efficient queries
-RateLimitSchema.index({ ip: 1, date: 1 }, { unique: true });
+rateLimitSchema.index({ ip: 1, date: 1 }, { unique: true });
 
-const RateLimit = models.RateLimit || model("RateLimit", RateLimitSchema);
+const RateLimit = models.RateLimit || model("RateLimit", rateLimitSchema);
 
 export default RateLimit;

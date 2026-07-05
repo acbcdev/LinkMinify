@@ -1,6 +1,6 @@
 import { connectDB } from "@/lib/mongodb";
 import { generateCode } from "@/lib/utils";
-import Hash from "@/models/hash";
+import LinkModel from "@/models/link";
 
 export interface Link {
   code: string;
@@ -31,7 +31,7 @@ function isDuplicateKeyError(error: unknown): boolean {
 
 async function createWithUniqueCode(url: string, attempt = 1): Promise<Link> {
   try {
-    return await Hash.create({ url, code: generateCode() });
+    return await LinkModel.create({ url, code: generateCode() });
   } catch (err) {
     if (!isDuplicateKeyError(err)) throw err; // otro error → NO te lo tragues
     if (attempt >= MAX_RETRIES) {
@@ -51,12 +51,12 @@ class MongoLinkRepository implements LinkRepository {
 
   async trackClick(code: string): Promise<Link | null> {
     await connectDB();
-    return Hash.findOneAndUpdate({ code }, { $inc: { clicked: 1 } });
+    return LinkModel.findOneAndUpdate({ code }, { $inc: { clicked: 1 } });
   }
 
   async deleteByCode(code: string): Promise<number> {
     await connectDB();
-    const result = await Hash.deleteOne({ code });
+    const result = await LinkModel.deleteOne({ code });
     return result.deletedCount;
   }
 }

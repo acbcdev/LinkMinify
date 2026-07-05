@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { IsValidUrl, normalizeUrl, randomNum } from "@/lib/utils";
+import { isValidUrl, normalizeUrl, randomNum } from "@/lib/utils";
 
 describe("normalizeUrl", () => {
   it("should keep https URL unchanged", () => {
@@ -21,47 +21,47 @@ describe("normalizeUrl", () => {
   });
 });
 
-describe("IsValidUrl", () => {
+describe("isValidUrl", () => {
   // Valid URLs
   it("should return true for valid HTTPS URL", () => {
-    expect(IsValidUrl("https://www.example.com")).toBe(true);
+    expect(isValidUrl("https://www.example.com")).toBe(true);
   });
 
   it("should return true for valid HTTP URL", () => {
-    expect(IsValidUrl("http://example.com")).toBe(true);
+    expect(isValidUrl("http://example.com")).toBe(true);
   });
 
   it("should return true for URL without protocol", () => {
-    expect(IsValidUrl("example.com")).toBe(true);
+    expect(isValidUrl("example.com")).toBe(true);
   });
 
   it("should return true for URL with path", () => {
-    expect(IsValidUrl("https://example.com/path/to/resource")).toBe(true);
+    expect(isValidUrl("https://example.com/path/to/resource")).toBe(true);
   });
 
   it("should return true for URL with query parameters", () => {
-    expect(IsValidUrl("https://example.com/search?q=test&page=1")).toBe(true);
+    expect(isValidUrl("https://example.com/search?q=test&page=1")).toBe(true);
   });
 
   // Invalid URLs
   it("should return false for empty string", () => {
-    expect(IsValidUrl("")).toBe(false);
+    expect(isValidUrl("")).toBe(false);
   });
 
   it("should return false for invalid protocol", () => {
-    expect(IsValidUrl("ftp://example.com")).toBe(false);
+    expect(isValidUrl("ftp://example.com")).toBe(false);
   });
 
   it("should return false for missing domain", () => {
-    expect(IsValidUrl("https://")).toBe(false);
+    expect(isValidUrl("https://")).toBe(false);
   });
 
   it("should return false for invalid characters", () => {
-    expect(IsValidUrl("https://example.com/path with spaces")).toBe(false);
+    expect(isValidUrl("https://example.com/path with spaces")).toBe(false);
   });
 
   it("should return false for plain text", () => {
-    expect(IsValidUrl("not a url")).toBe(false);
+    expect(isValidUrl("not a url")).toBe(false);
   });
 });
 describe("randomNum", () => {

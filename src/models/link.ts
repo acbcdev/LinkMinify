@@ -1,7 +1,7 @@
 import { Schema, model, models, Model } from "mongoose";
 import type { Link } from "@/lib/db";
 
-const hashSchema = new Schema({
+const linkSchema = new Schema({
   code: {
     type: String,
     unique: true,
@@ -18,6 +18,8 @@ const hashSchema = new Schema({
   },
 });
 
-const Hash = (models.Hash as Model<Link>) || model<Link>("Hash", hashSchema);
+// Collection pinned to "hashes" (nombre historico) para no perder datos existentes
+const LinkModel =
+  (models.Link as Model<Link>) || model<Link>("Link", linkSchema, "hashes");
 
-export default Hash;
+export default LinkModel;

@@ -22,7 +22,7 @@ export function normalizeUrl(url: string): string {
   return /^(https?:\/\/)/.test(url) ? url : `https://${url}`;
 }
 
-export function IsValidUrl(url: string): boolean {
+export function isValidUrl(url: string): boolean {
   const urlRegex = /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=#]*)?$/;
   return urlRegex.test(url);
 }

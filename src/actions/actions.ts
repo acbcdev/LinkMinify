@@ -16,12 +16,14 @@ export type CreateUrlResult =
   | { type: "rate_limited"; current: number; resetsAt: string }
   | { type: "error" };
 
-export async function GetUrl(hash: string): Promise<string | null> {
+// oxlint-disable-next-line react-doctor/server-auth-actions -- public redirect endpoint, no accounts in this app
+export async function getUrl(hash: string): Promise<string | null> {
   "use server";
   const link = await linkRepository.trackClick(hash);
   return link?.url ?? null;
 }
-export async function CreateUrl(url: string): Promise<CreateUrlResult> {
+// oxlint-disable-next-line react-doctor/server-auth-actions -- public shorten tool, gated by rate limit instead
+export async function createUrl(url: string): Promise<CreateUrlResult> {
   "use server";
   try {
     // Get IP address from headers
@@ -54,12 +56,13 @@ export async function CreateUrl(url: string): Promise<CreateUrlResult> {
       },
     };
   } catch (error) {
+    // oxlint-disable-next-line react-doctor/server-after-nonblocking -- already after()-wrapped, non-blocking
     after(() => console.log(error));
     return { type: "error" };
   }
 }
 
-export async function DeleteUrl(
+export async function deleteUrl(
   code: string,
 ): Promise<{ type: "success"; deletedCount: number } | { type: "error" }> {
   "use server";
@@ -67,6 +70,7 @@ export async function DeleteUrl(
     const deletedCount = await linkRepository.deleteByCode(code);
     return { type: "success", deletedCount };
   } catch (error) {
+    // oxlint-disable-next-line react-doctor/server-after-nonblocking -- already after()-wrapped, non-blocking
     after(() => console.log(error));
     return { type: "error" };
   }

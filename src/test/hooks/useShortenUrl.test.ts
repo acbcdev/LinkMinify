@@ -2,13 +2,13 @@ import { describe, it, expect, beforeEach, vi, type Mock } from "vitest";
 // eslint-disable-next-line import/no-unresolved
 import { renderHook, act, waitFor } from "@testing-library/react";
 import { useShortenUrl } from "@/hooks/useShortenUrl";
-import { CreateUrl } from "@/actions/Actions";
+import { createUrl } from "@/actions/actions";
 import { toast } from "sonner";
 import { useLinkStore } from "@/lib/store";
 
 // Mockear dependencias
-vi.mock("@/actions/Actions", () => ({
-  CreateUrl: vi.fn(),
+vi.mock("@/actions/actions", () => ({
+  createUrl: vi.fn(),
 }));
 
 vi.mock("sonner", () => ({
@@ -32,7 +32,7 @@ describe("useShortenUrl", () => {
     const mockedUseLinkStore = useLinkStore as unknown as Mock;
     mockedUseLinkStore.mockImplementation(
       (selector: (state: { addLink: typeof mockAddLink }) => any) =>
-        selector({ addLink: mockAddLink })
+        selector({ addLink: mockAddLink }),
     );
   });
 
@@ -61,7 +61,7 @@ describe("useShortenUrl", () => {
     });
 
     expect(toast.error).toHaveBeenCalledWith("Please enter a URL");
-    expect(CreateUrl).not.toHaveBeenCalled();
+    expect(createUrl).not.toHaveBeenCalled();
     expect(result.current.loading).toBe(false);
   });
 
@@ -77,7 +77,7 @@ describe("useShortenUrl", () => {
     });
 
     expect(toast.error).toHaveBeenCalledWith("Invalid URL");
-    expect(CreateUrl).not.toHaveBeenCalled();
+    expect(createUrl).not.toHaveBeenCalled();
     expect(result.current.loading).toBe(false);
   });
 
@@ -89,7 +89,7 @@ describe("useShortenUrl", () => {
       rateLimit: { remaining: 9, resetsAt: new Date().toISOString() },
     };
 
-    (CreateUrl as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
+    (createUrl as ReturnType<typeof vi.fn>).mockResolvedValue(mockResponse);
 
     const { result } = renderHook(() => useShortenUrl());
 
@@ -105,13 +105,13 @@ describe("useShortenUrl", () => {
       expect(result.current.loading).toBe(false);
     });
 
-    expect(CreateUrl).toHaveBeenCalledWith("https://example.com");
+    expect(createUrl).toHaveBeenCalledWith("https://example.com");
     expect(mockAddLink).toHaveBeenCalledWith({
       code: "abc123",
       url: "https://example.com",
     });
     expect(toast.success).toHaveBeenCalledWith(
-      "Link created successfully. 9 remaining today."
+      "Link created successfully. 9 remaining today.",
     );
     expect(result.current.url).toBe("");
   });
@@ -126,8 +126,8 @@ describe("useShortenUrl", () => {
       resetsAt: resetDate.toISOString(),
     };
 
-    (CreateUrl as ReturnType<typeof vi.fn>).mockResolvedValue(
-      mockRateLimitResponse
+    (createUrl as ReturnType<typeof vi.fn>).mockResolvedValue(
+      mockRateLimitResponse,
     );
 
     const { result } = renderHook(() => useShortenUrl());
@@ -151,14 +151,14 @@ describe("useShortenUrl", () => {
         .padStart(2, "0")}:${resetDate
         .getMinutes()
         .toString()
-        .padStart(2, "0")} UTC.`
+        .padStart(2, "0")} UTC.`,
     );
     expect(mockAddLink).not.toHaveBeenCalled();
     expect(result.current.url).toBe("https://example.com");
   });
 
   it("debe manejar otros errores del servidor", async () => {
-    (CreateUrl as ReturnType<typeof vi.fn>).mockResolvedValue({
+    (createUrl as ReturnType<typeof vi.fn>).mockResolvedValue({
       type: "error",
     });
 
@@ -177,14 +177,14 @@ describe("useShortenUrl", () => {
     });
 
     expect(toast.error).toHaveBeenCalledWith(
-      "An error occurred, try again later"
+      "An error occurred, try again later",
     );
     expect(mockAddLink).not.toHaveBeenCalled();
   });
 
   it("debe manejar excepciones durante la creación", async () => {
-    (CreateUrl as ReturnType<typeof vi.fn>).mockRejectedValue(
-      new Error("Network error")
+    (createUrl as ReturnType<typeof vi.fn>).mockRejectedValue(
+      new Error("Network error"),
     );
 
     const { result } = renderHook(() => useShortenUrl());
@@ -202,7 +202,7 @@ describe("useShortenUrl", () => {
     });
 
     expect(toast.error).toHaveBeenCalledWith(
-      "An error occurred, try again later"
+      "An error occurred, try again later",
     );
     expect(mockAddLink).not.toHaveBeenCalled();
   });

@@ -3,7 +3,7 @@
 import { MoreVertical, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { DeleteUrl } from "@/actions/Actions";
+import { deleteUrl } from "@/actions/actions";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -97,7 +97,7 @@ export default function LinksList() {
                           <DropdownMenuItem
                             onClick={async () => {
                               try {
-                                await DeleteUrl(code);
+                                await deleteUrl(code);
                                 deleteLink(code);
                                 toast.success("Link deleted successfully");
                               } catch (error) {
