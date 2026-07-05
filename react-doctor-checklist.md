@@ -30,26 +30,22 @@ Full scan (41 issues): `/var/folders/96/gpnkggdn3r51vzl50xfg36yh0000gn/T/react-d
       `src/components/ui/textarea.tsx:5` ✓
       Verified: `tsc --noEmit` clean, react-doctor rescan 96/100, rule no longer flagged.
 
-- [ ] **no-multi-comp** (×2) — Maintainability — multiple components declared in one file
-      `src/components/ui/input-group.tsx:60,119`
+- [x] **no-multi-comp** (×2) — `src/components/ui/input-group.tsx:60,119`
+      Confirmed false positive: 6 components, 100% exported — matches tool's own shadcn-barrel exemption (4+ comps, ~70%+ exported). No code change. Doesn't reappear on rescan.
 
-- [ ] **prefer-module-scope-pure-function** (×1) — Maintainability — `removeProtocol` rebuilt every render
-      `src/components/LinksList.tsx:28` — move fn above component (no local state used)
+- [x] **prefer-module-scope-pure-function** (×1) — `src/components/LinksList.tsx:28`
+      Fix applied: hoisted `removeProtocol` above component (captured only its own param).
 
-- [ ] **only-export-components** (×1) — Maintainability — non-component export breaks Fast Refresh
-      `src/components/ui/button.tsx:56`
+- [x] **only-export-components** (×1) — `src/components/ui/button.tsx:56`
+      Fix applied: moved `buttonVariants` cva to new `src/components/ui/button-variants.ts`, `button.tsx` now exports only `Button`. No external callers of `buttonVariants` (grep confirmed).
 
-- [ ] **no-inline-bounce-easing** (×1) — Performance — dated `animate-bounce`
-      `src/components/ShortenForm.tsx:15` — swap for `cubic-bezier(0.16, 1, 0.3, 1)` ease-out
+- [x] **no-inline-bounce-easing** (×1) — `src/components/ShortenForm.tsx:15`
+      Fix applied: `animate-bounce-fade-in` → `animate-fade-in` (checked `@midudev/tailwind-animations` source: keyframe had no overshoot, but rule bans "bounce" naming on form feedback regardless — matches `LinksList.tsx`'s existing pattern).
 
-- [ ] **no-prevent-default** (×1) — Bugs — `onSubmit` calls `preventDefault()`, breaks no-JS submit
-      `src/components/ShortenForm.tsx:15` — use `<form action={serverAction}>`
+- [x] **no-prevent-default** (×1) — `src/components/ShortenForm.tsx:15`
+      Confirmed false positive: `onSubmit` drives async client work (toast messages, rate-limit UI, Zustand/localStorage store update via `useShortenUrl`), not pure navigation. `<form action={serverAction}>` can't reach the client-only store without `useActionState` boilerplate — out of scope for a lint fix. Still flags on rescan (expected, tool can't see this).
 
-- [ ] **click-events-have-key-events** (×1) — Accessibility — `onClick` w/ no keyboard handler
-      `src/components/ui/input-group.tsx:66` — add `onKeyUp`/`onKeyDown`
+- [x] **click-events-have-key-events** (×1) — `src/components/ui/input-group.tsx:66`
+      Confirmed false positive: `onClick` only refocuses the already-keyboard-accessible `<input>` inside (or no-ops if target is a button) — a focus-delegation convenience like `<label>`, not an independent action. No keyboard user loses functionality. Doesn't reappear on rescan.
 
-### Triage order suggestion
-
-1. unused-file check first (may kill the 14 react19 findings in card.tsx/table.tsx for free if truly dead)
-2. no-react19-deprecated-apis batch (mechanical, high count)
-3. rest — one-offs, low effort each
+### Status: all 12 items resolved (7 fixed, 5 confirmed false positives). `tsc --noEmit` clean. Rescan: 73/100, single remaining flag is the documented `no-prevent-default` false positive.
